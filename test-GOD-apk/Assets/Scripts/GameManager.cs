@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+    public event Action<int> UnitsMerged;
+
     [Header("Scene Spawn Points (set these directly in scene)")]
     [SerializeField] private List<Transform> _spawnPoints = new List<Transform>();
 
@@ -22,15 +25,16 @@ public class GameManager : MonoBehaviour
     private readonly Dictionary<Transform, Units> _spawnOccupancy = new Dictionary<Transform, Units>();
     private readonly Dictionary<Units, Transform> _dragStartSpawnPoints = new Dictionary<Units, Transform>();
     private bool _isMergeInProgress;
+    private bool _isBoardInteractable = true;
 
     private void Start()
     {
-        SpawnRandomTierOneUnits(Random.Range(_initialSpawnRange.x, _initialSpawnRange.y + 1));
+        SpawnRandomTierOneUnits(UnityEngine.Random.Range(_initialSpawnRange.x, _initialSpawnRange.y + 1));
     }
 
     public void NotifyDragStarted(Units draggedUnit)
     {
-        if (_isMergeInProgress || draggedUnit == null || draggedUnit.CurrentSpawnPoint == null)
+        if (!_isBoardInteractable || _isMergeInProgress || draggedUnit == null || draggedUnit.CurrentSpawnPoint == null)
         {
             return;
         }
@@ -41,7 +45,7 @@ public class GameManager : MonoBehaviour
 
     public void NotifyDragEnded(Units draggedUnit)
     {
-        if (draggedUnit == null)
+        if (!_isBoardInteractable || draggedUnit == null)
         {
             return;
         }
@@ -149,13 +153,18 @@ public class GameManager : MonoBehaviour
         Destroy(draggedUnit.gameObject);
         Destroy(targetUnit.gameObject);
 
-        int nextTier = targetUnit.Tier + 1;
+        int maxTier = _unitPrefabsByTier.Count;
+        int nextTier = Mathf.Min(targetUnit.Tier + 1, maxTier);
         SpawnUnitOfTier(nextTier, targetSpawnPoint, mergePosition);
+        UnitsMerged?.Invoke(nextTier);
 
-        int minPostMergeSpawn = Mathf.Max(2, _postMergeSpawnRange.x);
-        int maxPostMergeSpawn = Mathf.Max(minPostMergeSpawn, _postMergeSpawnRange.y);
-        int extraSpawnCount = Random.Range(minPostMergeSpawn, maxPostMergeSpawn + 1);
-        SpawnRandomTierOneUnits(extraSpawnCount);
+        if (CountUnitsOfTier(1) < 2)
+        {
+            int minPostMergeSpawn = Mathf.Max(2, _postMergeSpawnRange.x);
+            int maxPostMergeSpawn = Mathf.Max(minPostMergeSpawn, _postMergeSpawnRange.y);
+            int extraSpawnCount = UnityEngine.Random.Range(minPostMergeSpawn, maxPostMergeSpawn + 1);
+            SpawnRandomTierOneUnits(extraSpawnCount);
+        }
     }
 
     private void SpawnRandomTierOneUnits(int count)
@@ -193,7 +202,7 @@ public class GameManager : MonoBehaviour
             return null;
         }
 
-        return freePoints[Random.Range(0, freePoints.Count)];
+        return freePoints[UnityEngine.Random.Range(0, freePoints.Count)];
     }
 
     private Transform FindNearestFreeSpawnPoint(Vector3 worldPosition)
@@ -272,6 +281,20 @@ public class GameManager : MonoBehaviour
         return spawned;
     }
 
+    private int CountUnitsOfTier(int tier)
+    {
+        int count = 0;
+        foreach (Units unit in _spawnOccupancy.Values)
+        {
+            if (unit != null && unit.Tier == tier)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private void PlaceUnitOnSpawnPoint(Units unit, Transform spawnPoint)
     {
         unit.SetSpawnPoint(spawnPoint);
@@ -279,5 +302,17 @@ public class GameManager : MonoBehaviour
         unit.transform.position = spawnPoint.position;
         unit.transform.rotation = Quaternion.Euler(_unitFacingEuler);
         _spawnOccupancy[spawnPoint] = unit;
+    }
+
+    public void SetBoardInteractable(bool canInteract)
+    {
+        _isBoardInteractable = canInteract;
+        foreach (Units unit in _spawnOccupancy.Values)
+        {
+            if (unit != null)
+            {
+                unit.SetInteractable(canInteract);
+            }
+        }
     }
 }

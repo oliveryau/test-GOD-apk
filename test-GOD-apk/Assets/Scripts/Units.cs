@@ -11,6 +11,7 @@ public class Units : MonoBehaviour
     private bool _isDragging;
     private float _dragHeight;
     private bool _canInteract = true;
+    private int _activeTouchFingerId = -1;
 
     public int Tier => _tier;
     public Transform CurrentSpawnPoint { get; private set; }
@@ -27,43 +28,42 @@ public class Units : MonoBehaviour
         _mainCamera = Camera.main;
     }
 
+    private void Update()
+    {
+        HandleTouchInput();
+    }
+
     private void OnMouseDown()
     {
-        if (_gameManager == null || !_canInteract)
+        if (IsUsingTouchInput() || _gameManager == null || !_canInteract)
         {
             return;
         }
 
-        _isDragging = true;
-        _dragHeight = transform.position.y;
-        _gameManager.NotifyDragStarted(this);
+        BeginDrag();
     }
 
     private void OnMouseDrag()
     {
-        if (!_isDragging || _mainCamera == null)
+        if (IsUsingTouchInput() || !_isDragging)
         {
             return;
         }
 
-        Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-        Plane dragPlane = new Plane(Vector3.up, new Vector3(0f, _dragHeight, 0f));
-
-        if (dragPlane.Raycast(ray, out float enter))
+        if (TryGetDragPoint(Input.mousePosition, out Vector3 dragWorldPosition))
         {
-            transform.position = ray.GetPoint(enter);
+            transform.position = dragWorldPosition;
         }
     }
 
     private void OnMouseUp()
     {
-        if (!_isDragging || _gameManager == null)
+        if (IsUsingTouchInput() || !_isDragging || _gameManager == null)
         {
             return;
         }
 
-        _isDragging = false;
-        _gameManager.NotifyDragEnded(this);
+        EndDrag();
     }
 
     public void SetSpawnPoint(Transform spawnPoint)
@@ -77,6 +77,7 @@ public class Units : MonoBehaviour
         if (!canInteract)
         {
             _isDragging = false;
+            _activeTouchFingerId = -1;
         }
     }
 
@@ -88,5 +89,104 @@ public class Units : MonoBehaviour
         }
 
         _animator.SetTrigger(triggerName);
+    }
+
+    private void HandleTouchInput()
+    {
+        if (!IsUsingTouchInput() || _mainCamera == null || _gameManager == null || !_canInteract)
+        {
+            return;
+        }
+
+        for (int i = 0; i < Input.touchCount; i++)
+        {
+            Touch touch = Input.GetTouch(i);
+
+            if (_activeTouchFingerId == -1)
+            {
+                if (touch.phase == TouchPhase.Began && IsTouchOnThisUnit(touch.position))
+                {
+                    _activeTouchFingerId = touch.fingerId;
+                    BeginDrag();
+                }
+
+                continue;
+            }
+
+            if (touch.fingerId != _activeTouchFingerId)
+            {
+                continue;
+            }
+
+            if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
+            {
+                if (_isDragging && TryGetDragPoint(touch.position, out Vector3 dragWorldPosition))
+                {
+                    transform.position = dragWorldPosition;
+                }
+            }
+            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                if (_isDragging)
+                {
+                    EndDrag();
+                }
+
+                _activeTouchFingerId = -1;
+            }
+        }
+    }
+
+    private bool IsTouchOnThisUnit(Vector2 screenPosition)
+    {
+        if (_mainCamera == null)
+        {
+            return false;
+        }
+
+        Ray ray = _mainCamera.ScreenPointToRay(screenPosition);
+        if (!Physics.Raycast(ray, out RaycastHit hit))
+        {
+            return false;
+        }
+
+        return hit.transform == transform || hit.transform.IsChildOf(transform);
+    }
+
+    private bool TryGetDragPoint(Vector2 screenPosition, out Vector3 dragWorldPosition)
+    {
+        dragWorldPosition = default;
+        if (_mainCamera == null)
+        {
+            return false;
+        }
+
+        Ray ray = _mainCamera.ScreenPointToRay(screenPosition);
+        Plane dragPlane = new Plane(Vector3.up, new Vector3(0f, _dragHeight, 0f));
+        if (!dragPlane.Raycast(ray, out float enter))
+        {
+            return false;
+        }
+
+        dragWorldPosition = ray.GetPoint(enter);
+        return true;
+    }
+
+    private void BeginDrag()
+    {
+        _isDragging = true;
+        _dragHeight = transform.position.y;
+        _gameManager.NotifyDragStarted(this);
+    }
+
+    private void EndDrag()
+    {
+        _isDragging = false;
+        _gameManager.NotifyDragEnded(this);
+    }
+
+    private static bool IsUsingTouchInput()
+    {
+        return Application.isMobilePlatform && Input.touchSupported;
     }
 }
