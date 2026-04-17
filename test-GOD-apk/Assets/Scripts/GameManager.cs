@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        GenerateGrid();
+        //GenerateGrid();
     }
 
     private void GenerateGrid()
@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
         {
             for (int z = 0; z < _depth; z++)
             {
-                var box = Instantiate(_boxPrefab, new Vector3(x, 0, z), Quaternion.identity);
+                var box = Instantiate(_boxPrefab, new Vector3(x, 0, z), Quaternion.Euler(90, 0, 0));
             }
         }
     }
