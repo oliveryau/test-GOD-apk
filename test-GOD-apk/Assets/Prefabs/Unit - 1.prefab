@@ -1023,7 +1023,7 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8410219007274024255}
   m_Enabled: 1
-  m_Avatar: {fileID: 0}
+  m_Avatar: {fileID: 9000000, guid: 00c094c9eff9d684da7a0d9be1706eeb, type: 3}
   m_Controller: {fileID: 9100000, guid: 7a4a2fdeba8b1604c8532770b359b887, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
@@ -1139,7 +1139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Units
   _tier: 1
-  _animator: {fileID: 0}
+  _animator: {fileID: 667978790324660371}
 --- !u!1 &8827876622311046468
 GameObject:
   m_ObjectHideFlags: 0

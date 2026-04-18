@@ -253,7 +253,7 @@ MonoBehaviour:
   - {fileID: 2077138317}
   - {fileID: 1764976144}
   _unitPrefabsByTier:
-  - {fileID: 6818543817043122304, guid: 9a66810d734651041af5272e3f52f924, type: 3}
+  - {fileID: 1024388312808223016, guid: a2d3574aac7c94a4cb5b1aecd3a1ba3c, type: 3}
   - {fileID: 2171754380152933490, guid: ad145f92cd79f744b8e0f7b550fe0be1, type: 3}
   - {fileID: 7637984506819206932, guid: 3cce1184d05d12f498a4543e5e4bc528, type: 3}
   _unitFacingEuler: {x: 0, y: 180, z: 0}
@@ -298,6 +298,7 @@ MonoBehaviour:
   _upgradePromptIndicator: {fileID: 1074518703}
   _upgradeButton: {fileID: 1075835617}
   _mergesRequiredPerUpgrade: 2
+  _maxCastleUpgrades: 3
   _boardViewAnchor: {fileID: 1131901799}
   _castleViewAnchor: {fileID: 724349188}
   _cameraTransitionDuration: 0.35
