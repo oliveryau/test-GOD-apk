@@ -5,6 +5,7 @@ public class Units : MonoBehaviour
 {
     [SerializeField] private int _tier = 1;
     [SerializeField] private Animator _animator;
+    [SerializeField] private GameObject _tierIcon;
 
     private GameManager _gameManager;
     private Camera _mainCamera;
@@ -31,6 +32,7 @@ public class Units : MonoBehaviour
     private void Update()
     {
         HandleTouchInput();
+        FaceIconTowardCamera();
     }
 
     private void OnMouseDown()
@@ -188,5 +190,24 @@ public class Units : MonoBehaviour
     private static bool IsUsingTouchInput()
     {
         return Application.isMobilePlatform && Input.touchSupported;
+    }
+
+    private void FaceIconTowardCamera()
+    {
+        if (_tierIcon == null || _mainCamera == null)
+        {
+            return;
+        }
+
+        Vector3 directionToCamera = _mainCamera.transform.position - _tierIcon.transform.position;
+        _tierIcon.transform.rotation = Quaternion.LookRotation(directionToCamera);
+    }
+
+    public void SetTierIconActive(bool isActive)
+    {
+        if (_tierIcon != null)
+        {
+            _tierIcon.SetActive(isActive);
+        }
     }
 }

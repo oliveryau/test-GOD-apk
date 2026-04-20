@@ -17,9 +17,9 @@ public class GameManager : MonoBehaviour
     [Header("Spawn Rules")]
     [SerializeField] private Vector2Int _initialSpawnRange = new Vector2Int(2, 3);
     [SerializeField] private Vector2Int _postMergeSpawnRange = new Vector2Int(2, 3);
-    [SerializeField] private float _mergeDropSnapDistance = 0.75f;
-    [SerializeField] private float _mergeMoveSpeed = 4f;
-    [SerializeField] private float _minMergeMoveDuration = 0.15f;
+    [SerializeField] private float _mergeDropSnapDistance;
+    [SerializeField] private float _mergeMoveSpeed;
+    [SerializeField] private float _minMergeMoveDuration;
     [SerializeField] private string _runTriggerName = "run";
 
     private readonly Dictionary<Transform, Units> _spawnOccupancy = new Dictionary<Transform, Units>();
@@ -123,6 +123,7 @@ public class GameManager : MonoBehaviour
         }
 
         draggedUnit.TriggerRunAnimation(_runTriggerName);
+        draggedUnit.SetTierIconActive(false);
 
         float elapsed = 0f;
         float travelDistance = Vector3.Distance(startPosition, targetPosition);

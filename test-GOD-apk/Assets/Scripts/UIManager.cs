@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -11,25 +11,20 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Camera _gameplayCamera;
     [SerializeField] private GameObject _progressRoot;
     [SerializeField] private Image _progressFillImage;
-    [SerializeField] private GameObject _upgradePromptRoot;
     [SerializeField] private GameObject _upgradePromptIndicator;
     [SerializeField] private Button _upgradeButton;
+    [SerializeField] private TextMeshProUGUI _coinValue;
 
     [Header("Progress")]
     [SerializeField] private int _mergesRequiredPerUpgrade = 2;
     [SerializeField] private int _maxCastleUpgrades = 3;
-
-    [Header("Camera View Anchors")]
-    [SerializeField] private Transform _boardViewAnchor;
-    [SerializeField] private Transform _castleViewAnchor;
-    [SerializeField] private float _cameraTransitionDuration = 0.35f;
-    [SerializeField] private Collider _mergeBoardAreaCollider;
 
     [Header("Castle Visual Upgrade")]
     [SerializeField] private Animator _castleAnimator;
     [SerializeField] private string _castleUpgradeTrigger = "upgrade";
     [SerializeField] private List<GameObject> _castleStages = new List<GameObject>();
 
+    private int _coins;
     private int _mergeCredits;
     private int _castleLevelIndex;
 
@@ -67,6 +62,7 @@ public class UIManager : MonoBehaviour
         }
 
         RefreshUi();
+        UpdateCoinDisplay();
         ApplyCastleStageVisual();
     }
 
@@ -87,7 +83,17 @@ public class UIManager : MonoBehaviour
     private void OnUnitsMerged(int mergedTier)
     {
         _mergeCredits++;
+        _coins += 100;
+        UpdateCoinDisplay();
         RefreshUi();
+    }
+
+    private void UpdateCoinDisplay()
+    {
+        if (_coinValue != null)
+        {
+            _coinValue.text = _coins.ToString();
+        }
     }
 
     private void HandleUpgradeButtonPressed()
@@ -121,12 +127,12 @@ public class UIManager : MonoBehaviour
             _progressFillImage.fillAmount = Mathf.Clamp01(normalized);
         }
 
-        if (_upgradePromptRoot != null)
+        if (_progressRoot != null)
         {
-            _upgradePromptRoot.SetActive(true);
+            _progressRoot.SetActive(true);
         }
 
-        if (_upgradePromptRoot != null)
+        if (_progressRoot != null)
         {
             if (_upgradePromptIndicator != null)
             {
@@ -141,6 +147,7 @@ public class UIManager : MonoBehaviour
         if (_upgradeButton != null)
         {
             _upgradeButton.interactable = canUpgrade;
+            _progressRoot.GetComponent<Animator>().SetBool("glowing", canUpgrade);
         }
     }
 
@@ -170,5 +177,10 @@ public class UIManager : MonoBehaviour
                 stage.SetActive(i == activeIndex);
             }
         }
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene("GameScene");
     }
 }
