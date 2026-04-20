@@ -32,8 +32,6 @@ public class UIManager : MonoBehaviour
 
     private int _mergeCredits;
     private int _castleLevelIndex;
-    private bool _isShowingCastleView;
-    private Coroutine _cameraTransitionRoutine;
 
     private void Awake()
     {
@@ -86,39 +84,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (TryGetPointerDownScreenPosition(out Vector2 screenPosition) && !IsPointerOverUi())
-        {
-            bool clickedBoard = IsScreenPositionOnBoard(screenPosition);
-
-            if (_isShowingCastleView)
-            {
-                if (clickedBoard)
-                {
-                    MoveCameraTo(_boardViewAnchor);
-                    _isShowingCastleView = false;
-                    if (_gameManager != null)
-                    {
-                        _gameManager.SetBoardInteractable(true);
-                    }
-                }
-            }
-            else
-            {
-                if (!clickedBoard)
-                {
-                    MoveCameraTo(_castleViewAnchor);
-                    _isShowingCastleView = true;
-                    if (_gameManager != null)
-                    {
-                        _gameManager.SetBoardInteractable(false);
-                    }
-                }
-            }
-        }
-    }
-
     private void OnUnitsMerged(int mergedTier)
     {
         _mergeCredits++;
@@ -137,8 +102,6 @@ public class UIManager : MonoBehaviour
         _castleLevelIndex++;
         ApplyCastleUpgradeAnimation();
         ApplyCastleStageVisual();
-        MoveCameraTo(_castleViewAnchor);
-        _isShowingCastleView = true;
         RefreshUi();
     }
 
@@ -179,108 +142,6 @@ public class UIManager : MonoBehaviour
         {
             _upgradeButton.interactable = canUpgrade;
         }
-    }
-
-    private void MoveCameraTo(Transform targetAnchor)
-    {
-        if (_gameplayCamera == null || targetAnchor == null)
-        {
-            return;
-        }
-
-        if (_cameraTransitionRoutine != null)
-        {
-            StopCoroutine(_cameraTransitionRoutine);
-        }
-
-        _cameraTransitionRoutine = StartCoroutine(AnimateCameraTransition(targetAnchor));
-    }
-
-    private IEnumerator AnimateCameraTransition(Transform targetAnchor)
-    {
-        Vector3 fromPosition = _gameplayCamera.transform.position;
-        Quaternion fromRotation = _gameplayCamera.transform.rotation;
-        Vector3 toPosition = targetAnchor.position;
-        Quaternion toRotation = targetAnchor.rotation;
-
-        float duration = Mathf.Max(0.01f, _cameraTransitionDuration);
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            _gameplayCamera.transform.position = Vector3.Lerp(fromPosition, toPosition, t);
-            _gameplayCamera.transform.rotation = Quaternion.Slerp(fromRotation, toRotation, t);
-            yield return null;
-        }
-
-        _gameplayCamera.transform.position = toPosition;
-        _gameplayCamera.transform.rotation = toRotation;
-        _cameraTransitionRoutine = null;
-    }
-
-    private bool TryGetPointerDownScreenPosition(out Vector2 screenPosition)
-    {
-        screenPosition = default;
-
-        if (Input.touchCount > 0)
-        {
-            for (int i = 0; i < Input.touchCount; i++)
-            {
-                Touch touch = Input.GetTouch(i);
-                if (touch.phase == TouchPhase.Began)
-                {
-                    screenPosition = touch.position;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            screenPosition = Input.mousePosition;
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool IsPointerOverUi(int pointerId = -1)
-    {
-        if (EventSystem.current == null)
-        {
-            return false;
-        }
-
-        return pointerId >= 0 ? EventSystem.current.IsPointerOverGameObject(pointerId) : EventSystem.current.IsPointerOverGameObject();
-    }
-
-    private bool IsScreenPositionOnBoard(Vector2 screenPosition)
-    {
-        if (_gameplayCamera == null)
-        {
-            return false;
-        }
-
-        Ray ray = _gameplayCamera.ScreenPointToRay(screenPosition);
-        if (!Physics.Raycast(ray, out RaycastHit hit))
-        {
-            return false;
-        }
-
-        if (_mergeBoardAreaCollider != null)
-        {
-            Transform boardRoot = _mergeBoardAreaCollider.transform;
-            if (hit.transform == boardRoot || hit.transform.IsChildOf(boardRoot))
-            {
-                return true;
-            }
-        }
-
-        return hit.transform.GetComponentInParent<Units>() != null;
     }
 
     private void ApplyCastleUpgradeAnimation()

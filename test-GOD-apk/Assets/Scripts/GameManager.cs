@@ -78,6 +78,12 @@ public class GameManager : MonoBehaviour
 
     private Units FindMergeTargetFor(Units draggedUnit)
     {
+        int maxTier = _unitPrefabsByTier.Count;
+        if (maxTier == 0 || draggedUnit.Tier >= maxTier)
+        {
+            return null;
+        }
+
         Transform nearestOccupiedPoint = FindNearestOccupiedSpawnPoint(draggedUnit.transform.position);
         if (nearestOccupiedPoint == null)
         {
@@ -127,7 +133,19 @@ public class GameManager : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / moveDuration);
-            draggedUnit.transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            Vector3 expectedPosition = Vector3.Lerp(startPosition, targetPosition, t);
+            float distanceFromPath = Vector3.Distance(draggedUnit.transform.position, expectedPosition);
+
+            if (distanceFromPath > _mergeDropSnapDistance)
+            {
+                // Merge cancelled - unit was dragged away
+                _isMergeInProgress = false;
+                draggedUnit.SetInteractable(true);
+                targetUnit.SetInteractable(true);
+                yield break;
+            }
+
+            draggedUnit.transform.position = expectedPosition;
             yield return null;
         }
 
@@ -160,10 +178,26 @@ public class GameManager : MonoBehaviour
 
         if (CountUnitsOfTier(1) < 2)
         {
-            int minPostMergeSpawn = Mathf.Max(2, _postMergeSpawnRange.x);
-            int maxPostMergeSpawn = Mathf.Max(minPostMergeSpawn, _postMergeSpawnRange.y);
-            int extraSpawnCount = UnityEngine.Random.Range(minPostMergeSpawn, maxPostMergeSpawn + 1);
-            SpawnRandomTierOneUnits(extraSpawnCount);
+            int freeSpawnPoints = 0;
+            foreach (Transform point in _spawnPoints)
+            {
+                if (point != null && !_spawnOccupancy.ContainsKey(point))
+                {
+                    freeSpawnPoints++;
+                }
+            }
+
+            // Only spawn if we have free points
+            if (freeSpawnPoints > 0)
+            {
+                int minPostMergeSpawn = Mathf.Max(2, _postMergeSpawnRange.x);
+                int maxPostMergeSpawn = Mathf.Max(minPostMergeSpawn, _postMergeSpawnRange.y);
+                int extraSpawnCount = Mathf.Min(
+                    UnityEngine.Random.Range(minPostMergeSpawn, maxPostMergeSpawn + 1),
+                    freeSpawnPoints
+                );
+                SpawnRandomTierOneUnits(extraSpawnCount);
+            }
         }
     }
 
