@@ -15,6 +15,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button _upgradeButton;
     [SerializeField] private GameObject _playerUI;
     [SerializeField] private TextMeshProUGUI _coinValue;
+    [SerializeField] private CoinFlyController _coinFlyController;
+    [SerializeField] private int _coinsPerMergeFlyCount = 8;
 
     [Header("Progress")]
     [SerializeField] private int _mergesRequiredPerUpgrade = 2;
@@ -22,7 +24,6 @@ public class UIManager : MonoBehaviour
 
     [Header("Castle Visual Upgrade")]
     [SerializeField] private Castle _castle;
-    [SerializeField] private Animator _castleAnimator;
     [SerializeField] private List<GameObject> _castleStages = new List<GameObject>();
 
     private int _coins;
@@ -81,10 +82,14 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void OnUnitsMerged(int mergedTier)
+    private void OnUnitsMerged(int mergedTier, Vector3 mergeWorldPosition)
     {
         _mergeCredits++;
         _coins += 100;
+        if (_coinFlyController != null)
+        {
+            _coinFlyController.SpawnCoinsFromWorld(mergeWorldPosition, Mathf.Max(1, _coinsPerMergeFlyCount));
+        }
         UpdateCoinDisplay();
         RefreshUi();
     }

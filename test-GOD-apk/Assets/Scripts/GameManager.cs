@@ -5,7 +5,7 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    public event Action<int> UnitsMerged;
+    public event Action<int, Vector3> UnitsMerged;
 
     [Header("Scene Spawn Points (set these directly in scene)")]
     [SerializeField] private List<Transform> _spawnPoints = new List<Transform>();
@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour
         int maxTier = _unitPrefabsByTier.Count;
         int nextTier = Mathf.Min(targetUnit.Tier + 1, maxTier);
         SpawnUnitOfTier(nextTier, targetSpawnPoint, mergePosition);
-        UnitsMerged?.Invoke(nextTier);
+        UnitsMerged?.Invoke(nextTier, mergePosition);
 
         if (CountUnitsOfTier(1) < 2)
         {

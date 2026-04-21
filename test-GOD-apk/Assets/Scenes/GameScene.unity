@@ -485,6 +485,7 @@ GameObject:
   - component: {fileID: 278674280}
   - component: {fileID: 278674279}
   - component: {fileID: 278674281}
+  - component: {fileID: 278674282}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -567,15 +568,61 @@ MonoBehaviour:
   _upgradeButton: {fileID: 1075835617}
   _playerUI: {fileID: 689899958}
   _coinValue: {fileID: 18260020}
+  _coinFlyController: {fileID: 278674282}
+  _coinsPerMergeFlyCount: 8
   _mergesRequiredPerUpgrade: 2
   _maxCastleUpgrades: 3
   _castle: {fileID: 1490608180}
-  _castleAnimator: {fileID: 0}
   _castleStages:
   - {fileID: 0}
   - {fileID: 8261697270148383449}
   - {fileID: 6139519026214049972}
   - {fileID: 1022263263528716980}
+--- !u!114 &278674282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278674278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3403f94df61e4a45b1e0c2c2ddb6905, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinFlyController
+  worldCamera: {fileID: 963194227}
+  flyCanvas: {fileID: 1265180730}
+  targetUiIcon: {fileID: 689899959}
+  coinPrefab: {fileID: 5537343304431476514, guid: ceee7df5272f1a44892e299a33d42938,
+    type: 3}
+  initialPoolSize: 20
+  flightDuration: 0.55
+  ease:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  randomStartOffset: {x: 35, y: 35}
+  arcHeight: 60
 --- !u!1 &366864384
 GameObject:
   m_ObjectHideFlags: 0
@@ -1860,8 +1907,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   audioMixer: {fileID: 0}
-  musicSource: {fileID: 0}
-  SFXSource: {fileID: 0}
+  musicSource: {fileID: 1212269445}
+  SFXSource: {fileID: 879120513}
   mainMusic: {fileID: 0}
   coinSfx: {fileID: 0}
   coinMergeSfx: {fileID: 0}
