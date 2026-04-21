@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image _progressFillImage;
     [SerializeField] private GameObject _upgradePromptIndicator;
     [SerializeField] private Button _upgradeButton;
+    [SerializeField] private GameObject _playerUI;
     [SerializeField] private TextMeshProUGUI _coinValue;
 
     [Header("Progress")]
@@ -20,8 +21,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private int _maxCastleUpgrades = 3;
 
     [Header("Castle Visual Upgrade")]
+    [SerializeField] private Castle _castle;
     [SerializeField] private Animator _castleAnimator;
-    [SerializeField] private string _castleUpgradeTrigger = "upgrade";
     [SerializeField] private List<GameObject> _castleStages = new List<GameObject>();
 
     private int _coins;
@@ -90,10 +91,8 @@ public class UIManager : MonoBehaviour
 
     private void UpdateCoinDisplay()
     {
-        if (_coinValue != null)
-        {
-            _coinValue.text = _coins.ToString();
-        }
+        _coinValue.text = _coins.ToString();
+        if (_coins > 0) _playerUI.GetComponent<Animator>().SetTrigger("add");
     }
 
     private void HandleUpgradeButtonPressed()
@@ -106,7 +105,7 @@ public class UIManager : MonoBehaviour
 
         _mergeCredits -= _mergesRequiredPerUpgrade;
         _castleLevelIndex++;
-        ApplyCastleUpgradeAnimation();
+        //ApplyCastleUpgradeAnimation();
         ApplyCastleStageVisual();
         RefreshUi();
     }
@@ -151,16 +150,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void ApplyCastleUpgradeAnimation()
-    {
-        if (_castleAnimator == null || string.IsNullOrEmpty(_castleUpgradeTrigger))
-        {
-            return;
-        }
-
-        _castleAnimator.SetTrigger(_castleUpgradeTrigger);
-    }
-
     private void ApplyCastleStageVisual()
     {
         if (_castleStages == null || _castleStages.Count == 0)
@@ -172,9 +161,9 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < _castleStages.Count; i++)
         {
             GameObject stage = _castleStages[i];
-            if (stage != null)
+            if (stage != null && _castle != null)
             {
-                stage.SetActive(i == activeIndex);
+                stage.SetActive(i <= activeIndex);
             }
         }
     }

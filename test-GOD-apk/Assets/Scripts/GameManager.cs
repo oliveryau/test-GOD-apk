@@ -305,6 +305,7 @@ public class GameManager : MonoBehaviour
         Units spawned = Instantiate(prefab, spawnPosition, Quaternion.identity);
         spawned.Setup(this, tier, spawnPoint);
         spawned.transform.rotation = Quaternion.Euler(_unitFacingEuler);
+        if (tier > 1) spawned.TriggerCoinAnimation("earn");
 
         if (spawnPoint != null)
         {
