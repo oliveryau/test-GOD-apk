@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _coinValue;
     [SerializeField] private CoinFlyController _coinFlyController;
     [SerializeField] private int _coinsPerMergeFlyCount = 8;
+    [SerializeField] private Button _zoomButton;
+    [SerializeField] private CameraZoomPanController _cameraZoomPanController;
 
     [Header("Progress")]
     [SerializeField] private int _mergesRequiredPerUpgrade = 2;
@@ -35,6 +37,10 @@ public class UIManager : MonoBehaviour
         if (_gameplayCamera == null)
         {
             _gameplayCamera = Camera.main;
+        }
+        if (_cameraZoomPanController == null)
+        {
+            _cameraZoomPanController = FindAnyObjectByType<CameraZoomPanController>();
         }
 
         if (_progressRoot == null && _progressFillImage != null)
@@ -56,6 +62,10 @@ public class UIManager : MonoBehaviour
         if (_upgradeButton != null)
         {
             _upgradeButton.onClick.AddListener(HandleUpgradeButtonPressed);
+        }
+        if (_zoomButton != null)
+        {
+            _zoomButton.onClick.AddListener(HandleZoomButtonPressed);
         }
 
         if (_progressRoot != null)
@@ -80,8 +90,17 @@ public class UIManager : MonoBehaviour
         {
             _upgradeButton.onClick.RemoveListener(HandleUpgradeButtonPressed);
         }
-    }
+        if (_zoomButton != null)
+        {
+            _zoomButton.onClick.RemoveListener(HandleZoomButtonPressed);
+        }
 
+        if (_cameraZoomPanController != null)
+        {
+            _cameraZoomPanController.SetZoomedOut(false);
+        }
+    }
+    
     private void OnUnitsMerged(int mergedTier, Vector3 mergeWorldPosition)
     {
         _mergeCredits++;
@@ -110,13 +129,29 @@ public class UIManager : MonoBehaviour
 
         _mergeCredits -= _mergesRequiredPerUpgrade;
         _castleLevelIndex++;
-        //ApplyCastleUpgradeAnimation();
         ApplyCastleStageVisual();
+        RefreshUi();
+    }
+
+    public void HandleZoomButtonPressed()
+    {
+        if (_cameraZoomPanController == null)
+        {
+            return;
+        }
+
+        bool isZoomedOut = _cameraZoomPanController.ToggleZoom();
+        if (_gameManager != null)
+        {
+            _gameManager.SetBoardInteractable(!isZoomedOut);
+        }
+
         RefreshUi();
     }
 
     private void RefreshUi()
     {
+        bool isZoomedOut = _cameraZoomPanController != null && _cameraZoomPanController.IsZoomedOut;
         int required = Mathf.Max(1, _mergesRequiredPerUpgrade);
         int maxUpgrades = Mathf.Max(0, _maxCastleUpgrades);
         bool hasUpgradeCapacity = _castleLevelIndex < maxUpgrades;
@@ -127,16 +162,16 @@ public class UIManager : MonoBehaviour
 
         if (_progressFillImage != null)
         {
-            _progressFillImage.gameObject.SetActive(true);
+            _progressFillImage.gameObject.SetActive(!isZoomedOut);
             _progressFillImage.fillAmount = Mathf.Clamp01(normalized);
         }
 
         if (_progressRoot != null)
         {
-            _progressRoot.SetActive(true);
+            _progressRoot.SetActive(!isZoomedOut);
         }
 
-        if (_progressRoot != null)
+        if (_progressRoot != null && !isZoomedOut)
         {
             if (_upgradePromptIndicator != null)
             {
@@ -147,11 +182,27 @@ public class UIManager : MonoBehaviour
                 _upgradeButton.gameObject.SetActive(canUpgrade);
             }
         }
+        else if (_upgradePromptIndicator != null)
+        {
+            _upgradePromptIndicator.SetActive(false);
+        }
+
+        if (_upgradeButton != null && isZoomedOut)
+        {
+            _upgradeButton.gameObject.SetActive(false);
+        }
 
         if (_upgradeButton != null)
         {
-            _upgradeButton.interactable = canUpgrade;
-            _progressRoot.GetComponent<Animator>().SetBool("glowing", canUpgrade);
+            _upgradeButton.interactable = !isZoomedOut && canUpgrade;
+            if (_progressRoot != null)
+            {
+                Animator progressAnimator = _progressRoot.GetComponent<Animator>();
+                if (progressAnimator != null)
+                {
+                    progressAnimator.SetBool("glowing", !isZoomedOut && canUpgrade);
+                }
+            }
         }
     }
 
