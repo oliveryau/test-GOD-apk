@@ -5,7 +5,6 @@ public class Units : MonoBehaviour
 {
     [SerializeField] private int _tier = 1;
     [SerializeField] private Animator _animator;
-    [SerializeField] private Animator _coinMergeAnim;
     [SerializeField] private GameObject _tierIcon;
 
     private GameManager _gameManager;
@@ -212,13 +211,13 @@ public class Units : MonoBehaviour
         }
     }
 
-    public void TriggerCoinAnimation(string triggerName)
-    {
-        if (_coinMergeAnim == null || string.IsNullOrEmpty(triggerName))
-        {
-            return;
-        }
+    //public void TriggerCoinAnimation(string triggerName)
+    //{
+    //    if (_coinMergeAnim == null || string.IsNullOrEmpty(triggerName))
+    //    {
+    //        return;
+    //    }
 
-        _coinMergeAnim.SetTrigger(triggerName);
-    }
+    //    _coinMergeAnim.SetTrigger(triggerName);
+    //}
 }
