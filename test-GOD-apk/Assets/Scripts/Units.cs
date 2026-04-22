@@ -14,6 +14,9 @@ public class Units : MonoBehaviour
     private bool _canInteract = true;
     private int _activeTouchFingerId = -1;
 
+    public AudioSource AudioSource;
+    public AudioClip UnitMergeSfx;
+
     public int Tier => _tier;
     public Transform CurrentSpawnPoint { get; private set; }
 
@@ -210,14 +213,4 @@ public class Units : MonoBehaviour
             _tierIcon.SetActive(isActive);
         }
     }
-
-    //public void TriggerCoinAnimation(string triggerName)
-    //{
-    //    if (_coinMergeAnim == null || string.IsNullOrEmpty(triggerName))
-    //    {
-    //        return;
-    //    }
-
-    //    _coinMergeAnim.SetTrigger(triggerName);
-    //}
 }

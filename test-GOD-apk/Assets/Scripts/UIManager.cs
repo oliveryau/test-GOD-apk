@@ -32,6 +32,10 @@ public class UIManager : MonoBehaviour
     private int _mergeCredits;
     private int _castleLevelIndex;
 
+    public AudioSource AudioSource;
+    public AudioClip successBuildSfx;
+    public AudioClip CastleUpgradeSfx;
+
     private void Awake()
     {
         if (_gameplayCamera == null)
@@ -220,6 +224,11 @@ public class UIManager : MonoBehaviour
             if (stage != null && _castle != null)
             {
                 stage.SetActive(i <= activeIndex);
+                if (activeIndex > 0)
+                {
+                    AudioSource.PlayOneShot(successBuildSfx);
+                    AudioSource.PlayOneShot(CastleUpgradeSfx);
+                }
             }
         }
     }
