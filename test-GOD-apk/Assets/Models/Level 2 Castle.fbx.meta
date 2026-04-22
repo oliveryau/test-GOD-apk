@@ -3,7 +3,17 @@ guid: 31cc512e48cf9c849bfb80fa0e3a373d
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Castle Level2_Material
+    second: {fileID: 2100000, guid: 032de31b01cbf104c989ef199fb504a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Castle_Mini Tower Material
+    second: {fileID: 2100000, guid: 945b4b5d58c02284cb402ebf60a69687, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bd0c958bfd2117144a5ede24b5445a72
+guid: cf686fddffe705d4286677340b04da12
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,28 +7,23 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: CastleGate_Material
-    second: {fileID: 2100000, guid: e11f202956a3a824ba5a7a37a819b160, type: 2}
+      name: Material.001
+    second: {fileID: 2100000, guid: b25724bbe26c70a47923b5dc1763ecfc, type: 2}
   - first:
-      type: UnityEngine:Material
+      type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: CastleMount_Material
-    second: {fileID: 2100000, guid: f19a43216354aee419c93f35566a3bf0, type: 2}
+      name: Image_0
+    second: {fileID: 2800000, guid: 8b89891e43012d64c84a320573500a60, type: 3}
   - first:
-      type: UnityEngine:Material
+      type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: Castle_Material
-    second: {fileID: 2100000, guid: d6a993fafa6001144b093d1dd7c1a0b4, type: 2}
+      name: Image_3
+    second: {fileID: 2800000, guid: e9f42bf1a2675f944845adf963d02232, type: 3}
   - first:
-      type: UnityEngine:Material
+      type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: CasttleDoor_Material
-    second: {fileID: 2100000, guid: e44e373a761ae9e42ae827a3aa3fd6ac, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Pillar_Material
-    second: {fileID: 2100000, guid: bee0c343d0ed23f4aa6bfd1c6a71b8b4, type: 2}
+      name: normal
+    second: {fileID: 2800000, guid: 2ef5b6a0b0e4a424c9a619d4f20ef7cb, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0

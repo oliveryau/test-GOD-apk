@@ -3,7 +3,22 @@ guid: b68e7eb157701924c9c2bc2e59802e5e
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Castke Level 3 Tower_Material
+    second: {fileID: 2100000, guid: 75983c209cc2cb747846deba23e51fb4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Castle Roof_ Material
+    second: {fileID: 2100000, guid: abf115db34bfbe848ab409dc23d74d19, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Level 3 Castle_Material
+    second: {fileID: 2100000, guid: ed93e3d7a75f04b458478129432897b2, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
