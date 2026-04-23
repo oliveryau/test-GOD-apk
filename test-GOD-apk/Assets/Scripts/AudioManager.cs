@@ -3,9 +3,9 @@ using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager AudioInstance { get; private set; }
+    //public static AudioManager AudioInstance { get; private set; }
 
-    public AudioMixer audioMixer;
+    //public AudioMixer audioMixer;
 
     [Header("Global Audio Sources")]
     [SerializeField] public AudioSource musicSource;
@@ -13,20 +13,17 @@ public class AudioManager : MonoBehaviour
 
     [Header("Global Audio Clips")]
     public AudioClip mainMusic;
-    public AudioClip coinSfx;
-    public AudioClip coinMergeSfx;
-    public AudioClip upgradeSfx;
 
-    void Awake()
-    {
-        if (AudioInstance != null && AudioInstance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        AudioInstance = this;
-        DontDestroyOnLoad(this.gameObject);
-    }
+    //void Awake()
+    //{
+    //    if (AudioInstance != null && AudioInstance != this)
+    //    {
+    //        Destroy(gameObject);
+    //        return;
+    //    }
+    //    AudioInstance = this;
+    //    DontDestroyOnLoad(this.gameObject);
+    //}
 
     private void Start()
     {
